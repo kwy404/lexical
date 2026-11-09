@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import {CodeExtension} from '@lexical/code-core';
+import {$isCodeNode, CodeExtension} from '@lexical/code-core';
 import {buildEditorFromExtensions} from '@lexical/extension';
 import {HistoryExtension} from '@lexical/history';
 import {$createLinkNode, $isLinkNode, LinkExtension} from '@lexical/link';
@@ -389,6 +389,22 @@ describe('WRAPPING_PRESERVES_FORMAT', () => {
       expect(textNodes.every(node => node.hasFormat('bold'))).toBe(true);
     });
   });
+});
+
+describe('CODE', () => {
+  test.each(['c++', 'c#'])(
+    'typing a fence with the language %s creates a code block',
+    language => {
+      using editor = buildEditorFromExtensions([MarkdownShortcutTestExtension]);
+      typeMarkdown(editor, '```' + language + ' ');
+      editor.read(() => {
+        const codeNode = $getRoot().getFirstChildOrThrow();
+        assert($isCodeNode(codeNode), 'Root child must be a CodeNode');
+        expect(codeNode.getLanguage()).toBe(language);
+        expect(codeNode.getTextContent()).toBe('');
+      });
+    },
+  );
 });
 
 describe('HISTORY', () => {

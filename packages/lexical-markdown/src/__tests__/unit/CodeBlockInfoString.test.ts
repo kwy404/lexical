@@ -104,6 +104,36 @@ describe('fenced code block info string', () => {
     expect(roundTrip('```\ncode\n```')).toBe('```\ncode\n```');
   });
 
+  it('reads a language that holds + or #', () => {
+    expect(importCodeBlock('```c++\nint x;\n```')).toEqual({
+      language: 'c++',
+      text: 'int x;',
+    });
+    expect(importCodeBlock('```c#\nint x;\n```')).toEqual({
+      language: 'c#',
+      text: 'int x;',
+    });
+    expect(importCodeBlock('```f# title="x"\nlet x = 1\n```')).toEqual({
+      language: 'f#',
+      text: 'let x = 1',
+    });
+    expect(roundTrip('```c++\nint x;\n```')).toBe('```c++\nint x;\n```');
+    expect(roundTrip('```c# title="x"\nint x;\n```')).toBe(
+      '```c# title="x"\nint x;\n```',
+    );
+  });
+
+  it('keeps other punctuation after the language out of it', () => {
+    expect(importCodeBlock('```js{1,3}\ncode\n```')).toEqual({
+      language: 'js',
+      text: 'code',
+    });
+    expect(importCodeBlock('```ts:no-line-numbers\ncode\n```')).toEqual({
+      language: 'ts',
+      text: 'code',
+    });
+  });
+
   it('leaves an unterminated fence unchanged', () => {
     expect(importCodeBlock('```javascript Incomplete tag')).toEqual({
       language: 'javascript',

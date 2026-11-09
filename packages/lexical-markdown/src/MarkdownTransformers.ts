@@ -233,7 +233,10 @@ const UNORDERED_LIST_REGEX = /^(\s*)[-*+]\s/;
 const CHECK_LIST_REGEX = /^(\s*)(?:[-*+]\s)?\s?(\[(\s|x)?\])\s/i;
 const HEADING_REGEX = /^(#{1,6})\s/;
 const QUOTE_REGEX = /^>\s/;
-const CODE_START_REGEX = /^([ \t]*`{3,})([\w-]+)?[ \t]?/;
+// After its first character the language may hold `+` and `#`, as in `c++`,
+// `c#` and `f#`. Other punctuation still ends it, so the metadata in
+// ```js{1,3} or ```ts:no-line-numbers stays out of the language.
+const CODE_START_REGEX = /^([ \t]*`{3,})([\w-][\w+#-]*)?[ \t]?/;
 const CODE_END_REGEX = /^[ \t]*`{3,}$/;
 const CODE_SINGLE_LINE_REGEX =
   /^[ \t]*```[^`]+(?:(?:`{1,2}|`{4,})[^`]+)*```(?:[^`]|$)/;
